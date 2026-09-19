@@ -1,0 +1,28 @@
+# Dependencies
+node_modules/
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Build & runtime artifacts
+dist/
+build/
+*.log
+coverage/
+
+# OS and Editor metadata
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Database dumps
+*.sqlite
+*.sqlite3
+*.db
+
+# Uploads directory (keep directory via .gitkeep, ignore uploaded contents)
+uploads/*
+!uploads/.gitkeep
