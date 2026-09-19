@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Log in securely to your Pulse social media account.">
+  <title>Log In — Pulse</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="stylesheet" href="/static/css/auth.css">
+</head>
+<body>
+
+  <!-- Dynamic Particle Canvas -->
+  <canvas id="bg-canvas" aria-hidden="true"></canvas>
+
+  <main class="auth-wrapper">
+    <div class="auth-card">
+      <div class="auth-header">
+        <a href="/" class="auth-logo">⚡ Pulse</a>
+        <p class="auth-subtitle">Welcome back! Sign in to your account.</p>
+      </div>
+
+      <div id="auth-alert" class="auth-alert alert-danger" role="alert"></div>
+
+      <form id="login-form" class="auth-form" novalidate>
+        <div class="input-group">
+          <label for="login-username">Username or Email</label>
+          <input type="text" id="login-username" class="form-control" placeholder="your_username or you@example.com" required autocomplete="username">
+        </div>
+
+        <div class="input-group">
+          <label for="login-password">Password</label>
+          <input type="password" id="login-password" class="form-control" placeholder="••••••••" required autocomplete="current-password">
+        </div>
+
+        <button type="submit" id="login-submit-btn" class="btn btn-primary" style="width: 100%; margin-top: 0.5rem;">
+          Log In
+        </button>
+      </form>
+
+      <div class="auth-footer">
+        Don't have an account? <a href="/register/">Create one now</a>
+      </div>
+    </div>
+  </main>
+
+  <div id="toast-container" class="toast-container" aria-live="assertive"></div>
+
+  <script type="module" src="/static/js/config.js"></script>
+  <script type="module" src="/static/js/utils.js"></script>
+  <script type="module" src="/static/js/api.js"></script>
+  <script type="module" src="/static/js/auth.js"></script>
+  <script type="module">
+    async function initLogin() {
+      const user = await Auth.checkAuth();
+      if (user) {
+        window.location.href = '/';
+        return;
+      }
+
+      const form = document.getElementById('login-form');
+      const alertBox = document.getElementById('auth-alert');
+      const submitBtn = document.getElementById('login-submit-btn');
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        alertBox.classList.remove('show');
+
+        const username = document.getElementById('login-username').value.trim();
+        const password = document.getElementById('login-password').value;
+
+        if (!username || !password) {
+          alertBox.textContent = 'Please fill in both fields.';
+          alertBox.classList.add('show');
+          return;
+        }
+
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Signing in...';
+
+        try {
+          await Auth.login(username, password);
+          Utils.showToast('Login successful! Redirecting...', 'success');
+          setTimeout(() => {
+            window.location.href = '/';
+          }, 500);
+        } catch (err) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Log In';
+
+          const errorMsg = err.data?.errors?.detail || 'Invalid username/email or password.';
+          alertBox.textContent = errorMsg;
+          alertBox.classList.add('show');
+        }
+      });
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initLogin);
+    } else {
+      initLogin();
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Pulse — Advanced Secure AI-Powered Social Media Platform with Communities, Real-Time Messaging, AI Writing Assistant, and Translation.">
+  <title>Pulse — Advanced Secure AI-Powered Platform</title>
+  
+  <!-- Modern Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- CSS Stylesheets -->
+  <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="stylesheet" href="/static/css/feed.css">
+  <link rel="stylesheet" href="/static/css/profile.css">
+  <link rel="stylesheet" href="/static/css/stories.css">
+  <link rel="stylesheet" href="/static/css/chat.css">
+  <link rel="stylesheet" href="/static/css/notifications.css">
+  <link rel="stylesheet" href="/static/css/discovery.css">
+  <link rel="stylesheet" href="/static/css/creator.css">
+  <link rel="stylesheet" href="/static/css/search_v3.css">
+  <link rel="stylesheet" href="/static/css/communities.css">
+  <link rel="stylesheet" href="/static/css/enhancements.css">
+  <link rel="stylesheet" href="/static/css/three_3d.css">
+
+  <!-- Three.js 3D WebGL Engine -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body class="view-mode-2d">
+
+  <!-- Interactive 3D WebGL Spatial Universe Canvas -->
+  <canvas id="universe-3d-canvas" aria-hidden="true"></canvas>
+
+  <!-- Dynamic Interactive Particle Background Canvas -->
+  <canvas id="bg-canvas" aria-hidden="true"></canvas>
+
+  <!-- Top Sticky Navigation -->
+  <nav class="navbar" aria-label="Main Navigation">
+    <div class="nav-container">
+      <a href="/" class="brand-logo" id="nav-brand">
+        <span class="brand-icon">⚡</span> Pulse <span style="font-size: 0.65rem; background: var(--primary-accent); padding: 2px 6px; border-radius: 6px; vertical-align: middle; margin-left: 4px;">Ultimate</span>
+      </a>
+
+      <!-- Global Search -->
+      <div class="nav-search">
+        <span class="search-icon">🔍</span>
+        <input type="search" id="global-search-input" placeholder="Search people, posts, #hashtags, communities..." autocomplete="off" aria-label="Search">
+        <div id="search-results-overlay" class="search-results-overlay" role="listbox"></div>
+      </div>
+
+      <!-- Navigation Actions -->
+      <div class="nav-actions">
+        <!-- Dark / Light Mode Toggle -->
+        <button class="theme-toggle-btn" id="theme-toggle-btn" title="Toggle Theme" aria-label="Toggle Theme">
+          ☀️
+        </button>
+
+        <!-- Real-Time Notifications Button -->
+        <div class="notif-wrapper auth-only" style="display: none;">
+          <button class="nav-btn nav-btn-ghost btn-sm" id="notif-toggle-btn" title="Notifications">
+            🔔 <span id="notif-badge" class="notif-badge">0</span>
+          </button>
+          <div id="notif-dropdown" class="notif-dropdown">
+            <div class="notif-dropdown-header">
+              <h4>Notifications</h4>
+              <button id="notif-mark-all-btn" class="btn btn-sm btn-outline" style="font-size: 10px;">Mark All Read</button>
+            </div>
+            <div id="notif-list" class="notif-list">
+              <p class="empty-state">No notifications yet.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Creator Studio Button -->
+        <button class="nav-btn nav-btn-ghost btn-sm auth-only" id="creator-studio-btn" style="display: none;" title="Creator Studio">
+          📊
+        </button>
+
+        <!-- Account Center & Privacy Settings Button -->
+        <button class="nav-btn nav-btn-ghost btn-sm auth-only" id="account-center-btn" style="display: none;" title="Account & Privacy">
+          ⚙️
+        </button>
+
+        <!-- Guest View Links -->
+        <div class="guest-only" style="display: flex; gap: 0.5rem;">
+          <a href="/login/" class="nav-btn nav-btn-ghost">Log In</a>
+          <a href="/register/" class="nav-btn nav-btn-primary">Get Started</a>
+        </div>
+
+        <!-- Authenticated View Links -->
+        <div class="auth-only" style="display: none; align-items: center; gap: 0.75rem;">
+          <button class="nav-avatar-btn" id="nav-profile-btn" onclick="ProfileModule.viewUserProfile(Auth.currentUser.username)">
+            <img src="" alt="Avatar" class="avatar-sm current-user-avatar">
+            <span class="current-user-name" style="font-size: 0.9rem; font-weight: 600;"></span>
+          </button>
+          <button class="nav-btn nav-btn-ghost btn-sm" onclick="Auth.logout()" title="Log out">
+            🚪 Logout
+          </button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main App Layout Grid -->
+  <main class="app-layout" style="display: grid; grid-template-columns: 240px 1fr 300px; gap: 24px; max-width: 1280px; margin: 20px auto; padding: 0 16px;">
+    
+    <!-- Left Navigation Sidebar -->
+    <aside class="app-sidebar-left">
+      <div class="sidebar-nav">
+        <a href="javascript:void(0);" class="nav-link active" id="sidebar-feed-link" onclick="FeedModule.showFeed()">
+          <span class="icon">🏠</span> Home Feed
+        </a>
+        <a href="javascript:void(0);" class="nav-link" id="sidebar-explore-link" onclick="FeedModule.switchTab('explore')">
+          <span class="icon">🧭</span> Explore
+        </a>
+        <a href="javascript:void(0);" class="nav-link" id="sidebar-communities-link">
+          <span class="icon">👥</span> Communities
+        </a>
+        <div class="auth-only" style="display: none; flex-direction: column; gap: 0.5rem;">
+          <a href="javascript:void(0);" class="nav-link" id="sidebar-saved-link" onclick="window.loadSavedPosts ? window.loadSavedPosts() : null">
+            <span class="icon">🔖</span> Saved Posts
+          </a>
+          <a href="javascript:void(0);" class="nav-link" id="sidebar-profile-link" onclick="ProfileModule.viewUserProfile(Auth.currentUser.username)">
+            <span class="icon">👤</span> My Profile
+          </a>
+          <button class="btn btn-primary" style="margin-top: 1rem; width: 100%;" onclick="document.getElementById('create-post-text')?.focus()">
+            ✨ New Post
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Center Main Feed / Profile / Communities Area -->
+    <section class="app-center-feed">
+      
+      <!-- 1. Main Feed View -->
+      <div id="main-feed-view">
+        
+        <!-- Stories Carousel Tray -->
+        <div class="auth-only" style="display: none;">
+          <div id="stories-tray" class="stories-tray-container"></div>
+        </div>
+
+        <!-- Feed Tab Switcher -->
+        <div class="feed-header-tabs" role="tablist">
+          <button class="feed-tab-btn active" id="tab-following" role="tab" aria-selected="true">Ranked Feed</button>
+          <button class="feed-tab-btn" id="tab-explore" role="tab" aria-selected="false">Explore All</button>
+        </div>
+
+        <!-- Create Post Card (Visible if Logged In) -->
+        <div class="create-post-card auth-only" style="display: none; margin-top: 1rem;">
+          <form id="create-post-form">
+            <div class="create-post-top">
+              <img src="" alt="My Avatar" class="create-post-avatar current-user-avatar">
+              <div class="create-post-input-wrap">
+                <textarea id="create-post-text" class="create-post-textarea" placeholder="What's happening? Share thoughts, #hashtags, or ideas..." rows="2" maxlength="2000"></textarea>
+                
+                <!-- Image Upload Preview -->
+                <div id="image-preview-container" class="image-preview-box">
+                  <img id="image-preview-img" src="" alt="Selected image">
+                  <button type="button" id="remove-image-preview-btn" class="remove-preview-btn" title="Remove attachment">✕</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="create-post-actions" style="flex-wrap: wrap; gap: 8px;">
+              <div style="display: flex; gap: 8px; align-items: center;">
+                <label for="post-image-input" class="attach-btn" title="Add Image">
+                  📷 <span>Photo</span>
+                </label>
+                <input type="file" id="post-image-input" accept="image/png, image/jpeg, image/webp, image/gif" style="display: none;">
+
+                <button type="button" class="btn btn-sm btn-outline" id="ai-enhance-btn" title="AI Writing Assistant">
+                  ✨ AI Assist
+                </button>
+              </div>
+
+              <button type="submit" class="btn btn-primary btn-sm">
+                Publish
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Posts Timeline -->
+        <div id="posts-timeline" class="feed-container" style="margin-top: 1.5rem;" aria-live="polite">
+          <div style="text-align: center; padding: 3rem;"><div class="spinner"></div></div>
+        </div>
+
+        <!-- Load More Button -->
+        <div style="text-align: center; margin: 2rem 0;">
+          <button id="load-more-posts-btn" class="btn btn-secondary" style="display: none;" onclick="FeedModule.loadMore()">
+            Load More Posts
+          </button>
+        </div>
+      </div>
+
+      <!-- 2. Communities View -->
+      <div id="communities-view" style="display: none;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+          <h2>Communities</h2>
+          <button class="btn btn-primary btn-sm auth-only" onclick="document.getElementById('create-community-modal')?.classList.add('active')">
+            + Create Community
+          </button>
+        </div>
+        <div id="communities-list" class="communities-grid">
+          <div class="spinner"></div>
+        </div>
+      </div>
+
+      <!-- 3. Profile View (Dynamically Injected) -->
+      <div id="main-profile-view" style="display: none;">
+        <div id="profile-content-container"></div>
+      </div>
+
+    </section>
+
+    <!-- Right Discovery Sidebar -->
+    <aside class="app-sidebar-right">
+      
+      <!-- Trending Hashtags Widget -->
+      <div class="discovery-widget">
+        <h4>🔥 Trending Hashtags</h4>
+        <div id="trending-tags-list" class="trending-chips-wrap">
+          <span class="empty-hint">Loading trending topics...</span>
+        </div>
+      </div>
+
+      <!-- Suggested Users Widget -->
+      <div class="discovery-widget auth-only" style="display: none;">
+        <h4>✨ Suggested For You</h4>
+        <div id="suggested-users-list" class="suggested-users-wrap">
+          <span class="empty-hint">Loading recommendations...</span>
+        </div>
+      </div>
+
+    </aside>
+
+  </main>
+
+  <!-- ================= V2 & V3 Floating Messenger Drawer ================= -->
+  <button id="chat-launcher-btn" class="chat-launcher-btn auth-only" style="display: none;" title="Messages" onclick="chatController.toggleDrawer()">
+    💬
+  </button>
+
+  <div id="chat-drawer" class="chat-drawer">
+    <div class="chat-header">
+      <h3>Direct Messages</h3>
+      <button id="close-chat-btn" class="chat-close-btn" onclick="chatController.toggleDrawer(false)">✕</button>
+    </div>
+    <div class="chat-body">
+      <div id="chat-conversations-list" class="chat-conversations-list"></div>
+      <div id="chat-messages-list" class="chat-messages-list">
+        <p class="empty-state">Select a conversation to start messaging</p>
+      </div>
+      <div id="chat-typing-indicator" class="chat-typing-indicator"></div>
+    </div>
+    <div class="chat-footer">
+      <form id="chat-message-form" class="chat-input-form">
+        <input type="text" id="chat-message-input" placeholder="Type a message..." autocomplete="off" />
+        <button type="submit" class="btn btn-primary btn-sm">Send</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ================= AI Writing Assistant Modal ================= -->
+  <div id="ai-assistant-modal" class="modal-overlay">
+    <div class="modal-card" style="max-width: 520px;">
+      <div class="modal-header">
+        <h3 class="modal-title">✨ AI Writing Assistant</h3>
+        <button id="close-ai-assistant-btn" class="modal-close">✕</button>
+      </div>
+      <div class="modal-body">
+        <textarea id="ai-input-text" class="form-control" rows="3" placeholder="Enter your draft text..."></textarea>
+        <div style="display: flex; gap: 10px; margin-top: 10px; align-items: center;">
+          <label style="font-size: 12px; color: var(--text-muted);">Tone:</label>
+          <select id="ai-tone-select" class="form-control" style="width: auto; padding: 4px 8px; font-size: 12px;">
+            <option value="engaging">Engaging & Hooking</option>
+            <option value="professional">Professional & Crisp</option>
+            <option value="casual">Casual & Relaxed</option>
+            <option value="humorous">Humorous & Playful</option>
+          </select>
+          <button id="ai-generate-suggestions-btn" class="btn btn-primary btn-sm" style="margin-left: auto;">Generate</button>
+        </div>
+        <hr style="border-color: var(--border-glass); margin: 16px 0;" />
+        <div id="ai-suggestions-results"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= Create Community Modal ================= -->
+  <div id="create-community-modal" class="modal-overlay">
+    <div class="modal-card" style="max-width: 460px;">
+      <div class="modal-header">
+        <h3 class="modal-title">Create Community</h3>
+        <button class="modal-close" onclick="document.getElementById('create-community-modal')?.classList.remove('active')">✕</button>
+      </div>
+      <form id="create-community-form">
+        <div class="modal-body">
+          <div class="input-group">
+            <label>Community Name</label>
+            <input type="text" id="community-name-input" class="form-control" required placeholder="e.g. developers, design, gaming" maxlength="100" />
+          </div>
+          <div class="input-group">
+            <label>Description</label>
+            <textarea id="community-desc-input" class="form-control" rows="3" placeholder="Describe the purpose and rules..."></textarea>
+          </div>
+          <div class="input-group">
+            <label>Privacy Type</label>
+            <select id="community-type-select" class="form-control">
+              <option value="public">Public — Anyone can join</option>
+              <option value="private">Private — Request approval required</option>
+              <option value="restricted">Restricted — Only approved members post</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="document.getElementById('create-community-modal')?.classList.remove('active')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Create Community</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ================= Creator Studio Modal ================= -->
+  <div id="creator-studio-modal" class="modal-overlay">
+    <div class="modal-card" style="max-width: 600px;">
+      <div class="modal-header">
+        <h3 class="modal-title">Creator Studio & Analytics</h3>
+        <button id="close-creator-studio-btn" class="modal-close">✕</button>
+      </div>
+      <div class="modal-body">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+          <h4 style="margin: 0;">Performance Overview</h4>
+          <select id="creator-timeframe-select" class="form-control" style="width: auto; padding: 4px 8px; font-size: 12px;">
+            <option value="7">Last 7 Days</option>
+            <option value="30" selected>Last 30 Days</option>
+            <option value="90">Last 90 Days</option>
+          </select>
+        </div>
+
+        <div id="creator-metrics-grid" class="creator-metrics-grid">
+          <span class="empty-hint">Loading analytics...</span>
+        </div>
+
+        <hr style="border-color: var(--border-glass); margin: 16px 0;" />
+
+        <div class="creator-tabs">
+          <button class="creator-tab-btn active">Drafts</button>
+          <button class="creator-tab-btn">Scheduled Posts</button>
+        </div>
+
+        <div id="creator-drafts-list"></div>
+        <div id="creator-scheduled-list" style="margin-top: 10px;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= Account Center & Privacy Modal ================= -->
+  <div id="account-center-modal" class="modal-overlay">
+    <div class="modal-card" style="max-width: 480px;">
+      <div class="modal-header">
+        <h3 class="modal-title">Account, Privacy & Verification</h3>
+        <button id="close-account-center-btn" class="modal-close">✕</button>
+      </div>
+      <div class="modal-body">
+        <h4>GDPR Data Export</h4>
+        <p style="font-size: 12px; color: var(--text-muted);">Download a complete archive of your profile, posts, comments, likes, and bookmarks in JSON format.</p>
+        <button id="export-data-btn" class="btn btn-outline btn-sm" style="width: 100%; margin-top: 6px;">📥 Export My Data</button>
+
+        <hr style="border-color: var(--border-glass); margin: 20px 0;" />
+
+        <h4>Privacy Settings</h4>
+        <form id="privacy-settings-form">
+          <div class="input-group" style="display: flex; align-items: center; justify-content: space-between;">
+            <label for="setting-is-private">Private Account</label>
+            <input type="checkbox" id="setting-is-private" style="width: 20px; height: 20px;" />
+          </div>
+          <div class="input-group">
+            <label for="setting-who-message">Who can message you</label>
+            <select id="setting-who-message" class="form-control">
+              <option value="everyone">Everyone</option>
+              <option value="followers">Followers Only</option>
+              <option value="nobody">Nobody</option>
+            </select>
+          </div>
+          <button type="submit" class="btn btn-primary btn-sm" style="width: 100%; margin-top: 10px;">Save Privacy Settings</button>
+        </form>
+
+        <hr style="border-color: var(--border-glass); margin: 20px 0;" />
+
+        <h4>Change Password</h4>
+        <form id="change-password-form" style="display: flex; flex-direction: column; gap: 8px; margin-top: 6px;">
+          <input type="password" id="change-pwd-current" placeholder="Current Password" class="form-control" required autocomplete="current-password" />
+          <input type="password" id="change-pwd-new" placeholder="New Password (min 8 chars)" class="form-control" required autocomplete="new-password" />
+          <input type="password" id="change-pwd-confirm" placeholder="Confirm New Password" class="form-control" required autocomplete="new-password" />
+          <button type="submit" class="btn btn-secondary btn-sm" style="width: 100%;">Update Password</button>
+        </form>
+
+        <hr style="border-color: var(--border-glass); margin: 20px 0;" />
+
+        <h4>Request Verification</h4>
+        <p style="font-size: 12px; color: var(--text-muted);">Apply for a verified badge on your Pulse profile.</p>
+        <form id="verification-request-form" style="display: flex; flex-direction: column; gap: 8px; margin-top: 6px;">
+          <input type="text" id="verification-category" placeholder="Category (e.g., Creator, Tech, Art)" class="form-control" required maxlength="50" />
+          <textarea id="verification-reason" placeholder="Reason for verification / public links..." class="form-control" rows="2" required maxlength="500"></textarea>
+          <button type="submit" class="btn btn-outline btn-sm" style="width: 100%;">Submit Verification Request</button>
+        </form>
+
+        <hr style="border-color: var(--border-glass); margin: 20px 0;" />
+
+        <h4>Blocked Users</h4>
+        <div id="account-blocked-users-list" style="margin-top: 8px; max-height: 150px; overflow-y: auto;">
+          <span class="empty-hint">No blocked users</span>
+        </div>
+
+        <hr style="border-color: var(--border-glass); margin: 20px 0;" />
+
+        <h4 style="color: #ef4444;">Danger Zone: Delete Account</h4>
+        <p style="font-size: 12px; color: var(--text-muted);">Permanently delete your account, posts, comments, and profile data.</p>
+        <form id="delete-account-form" style="margin-top: 8px;">
+          <input type="password" id="delete-account-password" placeholder="Confirm password" class="form-control" style="margin-bottom: 8px;" required />
+          <button type="submit" class="btn btn-danger btn-sm" style="width: 100%;">Permanently Delete Account</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= Stories Modals ================= -->
+  <div id="story-viewer-modal" class="story-viewer-modal">
+    <div class="story-viewer-card" id="story-viewer-content"></div>
+  </div>
+
+  <!-- ================= Create Story Modal ================= -->
+  <div id="story-create-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="story-create-title">
+    <div class="modal-card" style="max-width: 440px;">
+      <div class="modal-header">
+        <h3 id="story-create-title" class="modal-title">📸 Create Story</h3>
+        <button class="modal-close" aria-label="Close dialog" onclick="document.getElementById('story-create-modal')?.classList.remove('active')">✕</button>
+      </div>
+      <form id="story-create-form" enctype="multipart/form-data">
+        <div class="modal-body">
+          <div class="input-group">
+            <label for="story-media-input">Story Image / Media</label>
+            <input type="file" id="story-media-input" name="media" class="form-control" accept="image/*,video/*" required />
+          </div>
+          <div class="input-group" style="margin-top: 10px;">
+            <label for="story-caption-input">Caption (Optional)</label>
+            <input type="text" id="story-caption-input" name="caption" class="form-control" placeholder="Add a caption to your story..." maxlength="255" />
+          </div>
+        </div>
+        <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 10px; padding: 12px 16px; border-top: 1px solid var(--border-color);">
+          <button type="button" class="btn btn-secondary" onclick="document.getElementById('story-create-modal')?.classList.remove('active')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Publish Story</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ================= Edit Profile Modal ================= -->
+  <div id="edit-profile-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="edit-profile-title">
+    <div class="modal-card" style="max-width: 480px;">
+      <div class="modal-header">
+        <h3 id="edit-profile-title" class="modal-title">Edit Profile</h3>
+        <button class="modal-close" aria-label="Close dialog" onclick="document.getElementById('edit-profile-modal')?.classList.remove('active')">✕</button>
+      </div>
+      <form id="edit-profile-form">
+        <div class="modal-body">
+          <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 16px;">
+            <img id="edit-avatar-preview" src="" alt="Avatar Preview" class="avatar-md" style="width: 64px; height: 64px; border-radius: 50%; object-fit: cover;" />
+            <div>
+              <label for="edit-avatar-input" class="btn btn-secondary btn-sm" style="cursor: pointer;">Change Photo</label>
+              <input type="file" id="edit-avatar-input" accept="image/png, image/jpeg, image/webp" style="display: none;" />
+            </div>
+          </div>
+          <div class="input-group">
+            <label for="edit-profile-name">Display Name</label>
+            <input type="text" id="edit-profile-name" class="form-control" placeholder="Your Name" maxlength="50" />
+          </div>
+          <div class="input-group" style="margin-top: 10px;">
+            <label for="edit-profile-bio">Bio</label>
+            <textarea id="edit-profile-bio" class="form-control" rows="3" placeholder="Tell the world about yourself..." maxlength="300"></textarea>
+          </div>
+        </div>
+        <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 10px; padding: 12px 16px; border-top: 1px solid var(--border-color);">
+          <button type="button" class="btn btn-secondary" onclick="document.getElementById('edit-profile-modal')?.classList.remove('active')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Profile</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ================= User List Modal (Followers / Following) ================= -->
+  <div id="user-list-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="user-list-modal-title">
+    <div class="modal-card" style="max-width: 440px;">
+      <div class="modal-header">
+        <h3 id="user-list-modal-title" class="modal-title">Users</h3>
+        <button class="modal-close" aria-label="Close dialog" onclick="document.getElementById('user-list-modal')?.classList.remove('active')">✕</button>
+      </div>
+      <div id="user-list-modal-body" class="user-list-modal-body" style="max-height: 400px; overflow-y: auto; padding: 12px 16px;"></div>
+    </div>
+  </div>
+
+  <!-- ================= Lightbox Image Zoom Modal ================= -->
+  <div id="lightbox-modal" class="lightbox-modal" role="dialog" aria-modal="true" aria-label="Image Preview">
+    <button id="lightbox-close-btn" class="lightbox-close" aria-label="Close preview">&times;</button>
+    <img id="lightbox-img" class="lightbox-img" src="" alt="Full view" />
+  </div>
+
+  <!-- ================= Post Options Action Modal ================= -->
+  <div id="post-options-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="post-options-title">
+    <div class="modal-card" style="max-width: 380px; padding: 0; overflow: hidden;">
+      <div class="modal-header" style="padding: 12px 16px;">
+        <h3 id="post-options-title" class="modal-title" style="font-size: 15px;">Post Options</h3>
+        <button class="modal-close" aria-label="Close dialog" onclick="document.getElementById('post-options-modal')?.classList.remove('active')">✕</button>
+      </div>
+      <div id="post-options-list" class="post-options-list">
+        <!-- Dynamically populated based on owner vs visitor -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= Edit Post Modal ================= -->
+  <div id="edit-post-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="edit-post-title">
+    <div class="modal-card" style="max-width: 520px;">
+      <div class="modal-header">
+        <h3 id="edit-post-title" class="modal-title">✏️ Edit Post</h3>
+        <button class="modal-close" aria-label="Close dialog" onclick="document.getElementById('edit-post-modal')?.classList.remove('active')">✕</button>
+      </div>
+      <div class="modal-body">
+        <textarea id="edit-post-textarea" class="form-control" rows="5" placeholder="Edit your post content..." maxlength="2000"></textarea>
+      </div>
+      <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 10px; padding: 12px 16px; border-top: 1px solid var(--border-color);">
+        <button type="button" class="btn btn-secondary" onclick="document.getElementById('edit-post-modal')?.classList.remove('active')">Cancel</button>
+        <button type="button" id="save-edit-post-btn" class="btn btn-primary">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= Custom Accessible Confirm Modal ================= -->
+  <div id="custom-confirm-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="confirm-modal-title">
+    <div class="modal-card" style="max-width: 420px;">
+      <div class="modal-header">
+        <h3 id="confirm-modal-title" class="modal-title">Confirm Action</h3>
+        <button id="confirm-modal-close-btn" class="modal-close" aria-label="Close dialog">✕</button>
+      </div>
+      <div class="modal-body">
+        <p id="confirm-modal-message" style="color: var(--text-secondary); font-size: 14px; line-height: 1.5;"></p>
+      </div>
+      <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 10px; padding: 12px 16px; border-top: 1px solid var(--border-color);">
+        <button id="confirm-modal-cancel-btn" type="button" class="btn btn-secondary">Cancel</button>
+        <button id="confirm-modal-ok-btn" type="button" class="btn btn-danger">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= Custom Accessible Prompt Modal ================= -->
+  <div id="custom-prompt-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="prompt-modal-title">
+    <div class="modal-card" style="max-width: 440px;">
+      <div class="modal-header">
+        <h3 id="prompt-modal-title" class="modal-title">Input Required</h3>
+        <button id="prompt-modal-close-btn" class="modal-close" aria-label="Close dialog">✕</button>
+      </div>
+      <div class="modal-body">
+        <p id="prompt-modal-message" style="color: var(--text-secondary); font-size: 14px; margin-bottom: 10px;"></p>
+        <input type="text" id="prompt-modal-input" class="form-control" />
+      </div>
+      <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 10px; padding: 12px 16px; border-top: 1px solid var(--border-color);">
+        <button id="prompt-modal-cancel-btn" type="button" class="btn btn-secondary">Cancel</button>
+        <button id="prompt-modal-ok-btn" type="button" class="btn btn-primary">Submit</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= Report Post Modal ================= -->
+  <div id="report-post-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="report-modal-title">
+    <div class="modal-card" style="max-width: 440px;">
+      <div class="modal-header">
+        <h3 id="report-modal-title" class="modal-title">🚩 Report Post</h3>
+        <button class="modal-close" aria-label="Close dialog" onclick="document.getElementById('report-post-modal')?.classList.remove('active')">✕</button>
+      </div>
+      <form id="report-post-form">
+        <div class="modal-body">
+          <div class="input-group">
+            <label for="report-reason-select">Reason for Report</label>
+            <select id="report-reason-select" class="form-control" required>
+              <option value="spam">Spam or commercial scam</option>
+              <option value="harassment">Harassment or bullying</option>
+              <option value="hate_speech">Hate speech or discrimination</option>
+              <option value="violence">Violence or dangerous content</option>
+              <option value="misinformation">False or misleading information</option>
+              <option value="inappropriate">Inappropriate or NSFW content</option>
+              <option value="other">Other policy violation</option>
+            </select>
+          </div>
+          <div class="input-group" style="margin-top: 10px;">
+            <label for="report-details-input">Additional Context (Optional)</label>
+            <textarea id="report-details-input" class="form-control" rows="3" placeholder="Explain the issue for our moderation team..."></textarea>
+          </div>
+        </div>
+        <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 10px; padding: 12px 16px; border-top: 1px solid var(--border-color);">
+          <button type="button" class="btn btn-secondary" onclick="document.getElementById('report-post-modal')?.classList.remove('active')">Cancel</button>
+          <button type="submit" class="btn btn-danger">Submit Report</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="toast-container" aria-live="assertive"></div>
+
+  <!-- Modular Scripts -->
+  <script type="module" src="/static/js/config.js"></script>
+  <script type="module" src="/static/js/utils.js"></script>
+  <script type="module" src="/static/js/api.js"></script>
+  <script type="module" src="/static/js/auth.js"></script>
+  <script type="module" src="/static/js/likes.js"></script>
+  <script type="module" src="/static/js/comments.js"></script>
+  <script type="module" src="/static/js/posts.js"></script>
+  <script type="module" src="/static/js/follows.js"></script>
+  <script type="module" src="/static/js/profile.js"></script>
+  <script type="module" src="/static/js/feed.js"></script>
+
+  <!-- Version Modules -->
+  <script type="module">
+    import { storyController } from '/static/js/stories.js';
+    import { chatController } from '/static/js/chat.js';
+    import { notificationController } from '/static/js/notifications.js';
+    import { discoveryController } from '/static/js/discovery.js';
+    import { settingsV2Controller } from '/static/js/settings_v2.js';
+    import { creatorController } from '/static/js/creator.js';
+    import { accountCenterController } from '/static/js/account_center.js';
+    import { communitiesController } from '/static/js/communities.js';
+    import { aiAssistantController } from '/static/js/ai_assistant.js';
+    import { TranslationController } from '/static/js/translation.js';
+    import { threeUniverse } from '/static/js/three_universe.js';
+
+    window.storyController = storyController;
+    window.chatController = chatController;
+    window.notificationController = notificationController;
+    window.discoveryController = discoveryController;
+    window.settingsV2Controller = settingsV2Controller;
+    window.creatorController = creatorController;
+    window.accountCenterController = accountCenterController;
+    window.communitiesController = communitiesController;
+    window.aiAssistantController = aiAssistantController;
+    window.TranslationController = TranslationController;
+    window.threeUniverse = threeUniverse;
+
+    function initAllControllers() {
+      try { storyController?.init?.(); } catch (e) { console.error('Story init error:', e); }
+      try { chatController?.init?.(); } catch (e) { console.error('Chat init error:', e); }
+      try { notificationController?.init?.(); } catch (e) { console.error('Notification init error:', e); }
+      try { discoveryController?.init?.(); } catch (e) { console.error('Discovery init error:', e); }
+      try { settingsV2Controller?.init?.(); } catch (e) { console.error('Settings init error:', e); }
+      try { creatorController?.init?.(); } catch (e) { console.error('Creator init error:', e); }
+      try { accountCenterController?.init?.(); } catch (e) { console.error('AccountCenter init error:', e); }
+      try { communitiesController?.init?.(); } catch (e) { console.error('Communities init error:', e); }
+      try { aiAssistantController?.init?.(); } catch (e) { console.error('AI Assistant init error:', e); }
+      try { threeUniverse?.init?.(); } catch (e) { console.error('3D Universe init error:', e); }
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initAllControllers);
+    } else {
+      initAllControllers();
+    }
+  </script>
+
+</body>
+</html>

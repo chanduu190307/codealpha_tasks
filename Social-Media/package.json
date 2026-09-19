@@ -1,0 +1,37 @@
+{
+  "name": "pulse-3d-social-media",
+  "version": "2.0.0",
+  "description": "Advanced 3D Full-Stack Social Media Platform with Node.js, Express, WebSockets, and Three.js",
+  "main": "server/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "node --watch server/index.js",
+    "seed": "node server/seed.js",
+    "validate": "node server/scripts/validate_content.js",
+    "test": "node server/tests/verify_node_backend.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "express-rate-limit": "^7.3.0",
+    "helmet": "^7.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^1.4.5-lts.1",
+    "sqlite3": "^5.1.7",
+    "ws": "^8.18.0"
+  },
+  "keywords": [
+    "3d",
+    "social-media",
+    "threejs",
+    "nodejs",
+    "express",
+    "websockets",
+    "full-stack"
+  ],
+  "author": "Pulse 3D Team",
+  "license": "MIT"
+}

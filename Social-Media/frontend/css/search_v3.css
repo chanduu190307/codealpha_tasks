@@ -1,0 +1,68 @@
+/* Search History Chips & Feedback Styles */
+.search-history-container {
+  padding: 12px;
+  border-bottom: 1px solid var(--border-glass);
+}
+.search-history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  font-size: 11px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+.clear-history-btn {
+  background: none;
+  border: none;
+  color: var(--primary-accent);
+  font-size: 11px;
+  cursor: pointer;
+}
+.search-history-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.history-chip {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-glass);
+  border-radius: 12px;
+  padding: 4px 10px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.history-chip:hover {
+  background: rgba(99, 102, 241, 0.15);
+  color: #fff;
+}
+.delete-chip-btn {
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+/* Post Negative Feedback Menu */
+.negative-feedback-menu {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+.feedback-btn {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-glass);
+  border-radius: 14px;
+  font-size: 11px;
+  color: var(--text-muted);
+  padding: 3px 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.feedback-btn:hover {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  border-color: rgba(239, 68, 68, 0.3);
+}

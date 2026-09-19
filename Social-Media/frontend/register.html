@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Create your Pulse social media account.">
+  <title>Create Account — Pulse</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="stylesheet" href="/static/css/auth.css">
+</head>
+<body>
+
+  <!-- Dynamic Particle Canvas -->
+  <canvas id="bg-canvas" aria-hidden="true"></canvas>
+
+  <main class="auth-wrapper">
+    <div class="auth-card">
+      <div class="auth-header">
+        <a href="/" class="auth-logo">⚡ Pulse</a>
+        <p class="auth-subtitle">Join Pulse today and start sharing your thoughts.</p>
+      </div>
+
+      <div id="auth-alert" class="auth-alert alert-danger" role="alert"></div>
+
+      <form id="register-form" class="auth-form" novalidate>
+        <div class="input-group">
+          <label for="reg-username">Username</label>
+          <input type="text" id="reg-username" class="form-control" placeholder="e.g. alex_rivera" required minlength="3" maxlength="30" autocomplete="username">
+          <small class="form-text">Letters, numbers, underscores only (3-30 chars)</small>
+        </div>
+
+        <div class="input-group">
+          <label for="reg-email">Email Address</label>
+          <input type="email" id="reg-email" class="form-control" placeholder="alex@example.com" required autocomplete="email">
+        </div>
+
+        <div class="input-group">
+          <label for="reg-password">Password</label>
+          <input type="password" id="reg-password" class="form-control" placeholder="••••••••" required minlength="8" autocomplete="new-password">
+          <small class="form-text">Minimum 8 characters with letters & numbers</small>
+        </div>
+
+        <div class="input-group">
+          <label for="reg-password-confirm">Confirm Password</label>
+          <input type="password" id="reg-password-confirm" class="form-control" placeholder="••••••••" required autocomplete="new-password">
+        </div>
+
+        <button type="submit" id="register-submit-btn" class="btn btn-primary" style="width: 100%; margin-top: 0.5rem;">
+          Create Account
+        </button>
+      </form>
+
+      <div class="auth-footer">
+        Already have an account? <a href="/login/">Log in</a>
+      </div>
+    </div>
+  </main>
+
+  <div id="toast-container" class="toast-container" aria-live="assertive"></div>
+
+  <script type="module" src="/static/js/config.js"></script>
+  <script type="module" src="/static/js/utils.js"></script>
+  <script type="module" src="/static/js/api.js"></script>
+  <script type="module" src="/static/js/auth.js"></script>
+  <script type="module">
+    async function initRegister() {
+      const user = await Auth.checkAuth();
+      if (user) {
+        window.location.href = '/';
+        return;
+      }
+
+      const form = document.getElementById('register-form');
+      const alertBox = document.getElementById('auth-alert');
+      const submitBtn = document.getElementById('register-submit-btn');
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        alertBox.classList.remove('show');
+
+        const username = document.getElementById('reg-username').value.trim();
+        const email = document.getElementById('reg-email').value.trim();
+        const password = document.getElementById('reg-password').value;
+        const passwordConfirm = document.getElementById('reg-password-confirm').value;
+
+        if (!username || !email || !password || !passwordConfirm) {
+          alertBox.textContent = 'Please fill in all required fields.';
+          alertBox.classList.add('show');
+          return;
+        }
+
+        if (password !== passwordConfirm) {
+          alertBox.textContent = 'Passwords do not match.';
+          alertBox.classList.add('show');
+          return;
+        }
+
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Creating account...';
+
+        try {
+          await Auth.register(username, email, password, passwordConfirm);
+          Utils.showToast('Account created successfully! Redirecting...', 'success');
+          setTimeout(() => {
+            window.location.href = '/';
+          }, 500);
+        } catch (err) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Create Account';
+
+          const errs = err.data?.errors;
+          let msg = 'Registration failed. Please check the inputs.';
+          if (errs) {
+            if (errs.username) msg = errs.username[0];
+            else if (errs.email) msg = errs.email[0];
+            else if (errs.password) msg = errs.password.join(' ');
+            else if (errs.detail) msg = errs.detail;
+          }
+          alertBox.textContent = msg;
+          alertBox.classList.add('show');
+        }
+      });
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initRegister);
+    } else {
+      initRegister();
+    }
+  </script>
+</body>
+</html>
